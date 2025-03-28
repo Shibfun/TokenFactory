@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemeCoin Whitepaper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #FF6F85;
+            margin-bottom: 15px;
+        }
+        h1 { font-size: 2.2em; text-align: center; }
+        h2 { font-size: 1.6em; }
+        p { margin-bottom: 15px; font-size: 1.1em; }
+        ul { margin-left: 20px; margin-bottom: 15px; font-size: 1.1em; }
+        .section { margin-bottom: 25px; }
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 20px;
+        }
+        .highlight { color: #FF8A9D; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MemeCoin Whitepaper</h1>
+        <p style="text-align: center;">A Fun and Rewarding Staking Ecosystem on Shibarium</p>
+
+        <div class="section">
+            <h2>Introduction</h2>
+            <p>MemeCoin is an innovative platform that empowers users to create and stake their own meme-themed tokens on the Shibarium blockchain. Designed for simplicity and fun, MemeCoin offers a unique staking experience where users can earn rewards by staking any ERC20-compatible token or their MemeCoin tokens. Built for speed and affordability, MemeCoin leverages Shibarium’s efficient infrastructure.</p>
+        </div>
+
+        <div class="section">
+            <h2>What is MemeCoin?</h2>
+            <p>MemeCoin is a decentralized application (DApp) that allows anyone to deploy custom meme tokens and participate in a staking ecosystem. Whether you’re a token creator or a staker, MemeCoin provides an engaging way to grow your holdings through a transparent reward system. It’s all about community, creativity, and rewards!</p>
+        </div>
+
+        <div class="section">
+            <h2>How It Works</h2>
+            <ul>
+                <li><span class="highlight">Create Your Token:</span> Launch a meme token with a custom name, symbol, and staking token.</li>
+                <li><span class="highlight">Stake to Earn:</span> Stake any ERC20 token or MemeCoin to earn rewards in MemeCoin tokens.</li>
+                <li><span class="highlight">Reward System:</span> Earn rewards that start high and gradually decrease over time until the total supply is minted.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Token Details</h2>
+            <ul>
+                <li><span class="highlight">Total Supply:</span> 1,000,000,000,000,000 (1 quadrillion) tokens.</li>
+                <li><span class="highlight">Staking Units:</span>
+                    <ul>
+                        <li>Stake Token: Custom unit set at creation (e.g., 1,000,000 wei).</li>
+                        <li>MemeCoin: 10,000 tokens per unit.</li>
+                    </ul>
+                </li>
+                <li><span class="highlight">Mining Ends:</span> When 1 quadrillion tokens are minted.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Reward Mechanism</h2>
+            <ul>
+                <li><span class="highlight">Stake Token Rewards:</span>
+                    <ul>
+                        <li>Initial: 500 tokens per block per unit.</li>
+                        <li>Minimum: 10 tokens per block per unit.</li>
+                    </ul>
+                </li>
+                <li><span class="highlight">MemeCoin Rewards:</span>
+                    <ul>
+                        <li>Initial: 0.025 tokens per block per unit.</li>
+                        <li>Minimum: 0.0005 tokens per block per unit.</li>
+                    </ul>
+                </li>
+                <li><span class="highlight">Decay Rate:</span> Decreases 2% every 600,000 blocks (~1 month on Shibarium).</li>
+                <li><span class="highlight">Max Duration:</span> Approximately 5 years (29,400,000 blocks).</li>
+            </ul>
+            <p>Rewards are calculated per block based on the number of staking units. They decrease linearly over time and stop when the total supply is reached.</p>
+        </div>
+
+        <div class="section">
+            <h2>How to Create a MemeCoin</h2>
+            <p>Use the MemeCoin DApp on Shibarium:</p>
+            <ul>
+                <li>Connect a wallet (e.g., MetaMask) with BONE for gas fees.</li>
+                <li>Navigate to “Deploy MemeCoin.”</li>
+                <li>Enter:
+                    <ul>
+                        <li><span class="highlight">Name:</span> e.g., “CatCoin”</li>
+                        <li><span class="highlight">Symbol:</span> e.g., “CAT”</li>
+                        <li><span class="highlight">Stake Token Address:</span> Any ERC20 token address.</li>
+                        <li><span class="highlight">Stake Unit:</span> Minimum staking amount (e.g., 1,000,000 wei).</li>
+                    </ul>
+                </li>
+                <li>Click “Deploy” and confirm the transaction.</li>
+                <li>Retrieve your MemeCoin address from the DApp.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>How to Stake and Earn</h2>
+            <p>Stake with any MemeCoin contract:</p>
+            <ul>
+                <li><span class="highlight">Stake ERC20 Token:</span>
+                    <ul>
+                        <li>Search the MemeCoin address in the DApp.</li>
+                        <li>Enter the amount (in multiples of the stake unit).</li>
+                        <li>Approve the token and stake.</li>
+                    </ul>
+                </li>
+                <li><span class="highlight">Stake MemeCoin:</span>
+                    <ul>
+                        <li>Search the MemeCoin address.</li>
+                        <li>Enter the amount (multiples of 10,000).</li>
+                        <li>Stake directly.</li>
+                    </ul>
+                </li>
+                <li><span class="highlight">Claim Rewards:</span> Claim accumulated rewards anytime.</li>
+                <li><span class="highlight">Unstake:</span> Withdraw all staked tokens and claim rewards in one step.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Security Features</h2>
+            <ul>
+                <li><span class="highlight">Non-Reentrant:</span> Prevents reentrancy attacks during staking and unstaking.</li>
+                <li><span class="highlight">Immutable Parameters:</span> Stake token and unit are set at deployment and cannot be changed.</li>
+                <li><span class="highlight">Hard Cap:</span> Mining stops at 1 quadrillion tokens, ensuring predictability.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Why Shibarium?</h2>
+            <p>Shibarium offers low-cost transactions and fast block times, making it ideal for a staking DApp like MemeCoin. Its vibrant community and compatibility with Ethereum standards enhance the accessibility and scalability of MemeCoin.</p>
+        </div>
+
+        <div class="section">
+            <h2>Get Started</h2>
+            <p>Join the MemeCoin community on Shibarium! Create your own meme token or stake existing ones to earn rewards. Visit our DApp, connect your wallet, and start your staking adventure today!</p>
+        </div>
+
+        <footer>
+            <p>© 2025 MemeCoin Team | Powered by Shibarium</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemeCoin Staking DApp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #FFE4E9;
+            color: #5A4A6F;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .header { padding: 15px 0; text-align: center; width: 100%; }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            height: 40px;
+        }
+        .header-top .balance { font-size: 1.2em; color: #FF8A9D; font-weight: bold; }
+        .header-top .actions { display: flex; gap: 12px; }
+        .action-btn {
+            background: #FFD1D9;
+            color: #5A4A6F;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .action-btn:hover { background: #FF8A9D; color: #fff; }
+        .header-content { padding: 15px 0; }
+        .header-content h1 {
+            font-size: 1.8em;
+            color: #FF8A9D;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .profile-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .nickname { font-size: 1.1em; font-weight: bold; color: #A8A2C0; margin-right: 5px; }
+        .prompt {
+            font-size: 0.9em;
+            color: #5A4A6F;
+            text-align: center;
+            margin-bottom: 10px;
+            animation: fade 3s infinite;
+        }
+        @keyframes fade { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 0 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .section {
+            background: #FFF5F7;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 2px solid #FFD1D9;
+        }
+        .section-title {
+            font-size: 1.3em;
+            color: #FF8A9D;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        button {
+            background: #FF8A9D;
+            color: #fff;
+            border: none;
+            padding: 12px 0;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+            transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background: #FF6F85;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+        }
+        button:disabled {
+            background: #A8A2C0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        button.loading { opacity: 0.7; pointer-events: none; }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        input {
+            padding: 12px;
+            border: none;
+            border-radius: 15px;
+            background: #FFD1D9;
+            color: #5A4A6F;
+            font-size: 1em;
+            text-align: center;
+            transition: box-shadow 0.3s, background 0.3s;
+        }
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 8px #FF8A9D;
+            background: #FFE4E9;
+        }
+        .percentage-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .percentage-btn {
+            background: #FFD1D9;
+            color: #5A4A6F;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .percentage-btn:hover {
+            background: #FF8A9D;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .info-panel {
+            background: #FFE4E9;
+            padding: 10px;
+            border-radius: 15px;
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: #5A4A6F;
+            line-height: 1.6;
+        }
+        .meme-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .meme-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #FFD1D9;
+        }
+        .meme-item span { font-size: 0.9em; }
+        .copy-btn {
+            background: #FFD1D9;
+            color: #5A4A6F;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .copy-btn:hover { background: #FF8A9D; color: #fff; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #FFF5F7;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            color: #5A4A6F;
+            max-width: 320px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 2px solid #FFD1D9;
+        }
+        .modal-content p { margin-bottom: 15px; font-size: 1.1em; }
+        .modal-content button { padding: 10px 20px; border-radius: 25px; font-size: 0.95em; }
+        footer {
+            background: #FFD1D9;
+            text-align: center;
+            padding: 15px;
+            width: 100%;
+            color: #5A4A6F;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        @media (max-width: 480px) {
+            .header-content h1 { font-size: 1.5em; }
+            button { padding: 10px 0; font-size: 0.9em; max-width: 180px; }
+            input { font-size: 0.9em; padding: 10px; }
+            .percentage-btn { padding: 8px 12px; font-size: 0.85em; }
+            .prompt { font-size: 0.8em; }
+            .nickname { font-size: 1em; }
+            .section { padding: 15px; }
+            .container { max-width: 100%; padding: 0 10px; }
+            .header-top .balance { font-size: 1em; }
+            .action-btn { padding: 6px 10px; font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <span id="memeBalance">0 MEME</span>
+            <div class="actions">
+                <button class="action-btn" onclick="window.open('https://x.com/woofswap', '_blank')"><i class="fab fa-twitter"></i></button>
+                <button class="action-btn" onclick="window.open('https://t.me/ShibariumSRC20', '_blank')"><i class="fab fa-telegram-plane"></i></button>
+            </div>
+        </div>
+        <div class="header-content">
+            <h1>MemeCoin Staking</h1>
+            <div class="profile-section">
+                <span class="nickname" id="userNickname">Not connected</span>
+            </div>
+            <div class="prompt" id="prompt"></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="section">
+            <div class="section-title">Connect Wallet</div>
+            <div class="button-group">
+                <button id="connectButton">Connect MetaMask</button>
+            </div>
+            <div class="info-panel">Wallet: <span id="walletAddress">Not connected</span></div>
+        </div>
+        <div class="section" id="deploySection">
+            <div class="section-title">Deploy MemeCoin</div>
+            <div class="input-group">
+                <input type="text" id="memeName" placeholder="Name (e.g., DogCoin)">
+                <input type="text" id="memeSymbol" placeholder="Symbol (e.g., DOG)">
+                <input type="text" id="stakeTokenAddress" placeholder="Stake Token Address">
+                <input type="text" id="stakeUnitToken" placeholder="Stake Unit (e.g., 1000000)">
+            </div>
+            <div class="button-group">
+                <button id="deployMemeButton">Deploy MemeCoin</button>
+            </div>
+            <div class="info-panel" id="deployedMemeInfo">
+                <p>Your Deployed MemeCoins:</p>
+                <div class="meme-list" id="deployedMemeList"></div>
+            </div>
+        </div>
+        <div class="section" id="searchSection">
+            <div class="section-title">Search MemeCoin</div>
+            <div class="input-group">
+                <input type="text" id="searchMemeAddress" placeholder="Enter MemeCoin Address">
+            </div>
+            <div class="button-group">
+                <button id="searchMemeButton">Search</button>
+            </div>
+        </div>
+        <div class="section" id="tokenStakeSection" style="display: none;">
+            <div class="section-title" id="tokenSectionTitle">Stake Token</div>
+            <div class="input-group">
+                <input type="text" id="stakeTokenAmountInput" placeholder="Enter Amount">
+            </div>
+            <div class="percentage-buttons">
+                <button class="percentage-btn" onclick="setStakePercentage('Token', 25)">25%</button>
+                <button class="percentage-btn" onclick="setStakePercentage('Token', 50)">50%</button>
+                <button class="percentage-btn" onclick="setStakePercentage('Token', 75)">75%</button>
+                <button class="percentage-btn" onclick="setStakePercentage('Token', 100)">100%</button>
+            </div>
+            <div class="button-group">
+                <button id="stakeTokenButton">Stake</button>
+                <button id="unstakeTokenButton" disabled>Unstake All</button>
+                <button id="claimRewardsButton">Claim Rewards</button>
+            </div>
+            <div class="info-panel" id="tokenStakeInfo">Balance: 0<br>Staked: 0<br>Rewards: 0</div>
+        </div>
+        <div class="section" id="memeStakeSection" style="display: none;">
+            <div class="section-title" id="memeSectionTitle">Stake MemeCoin</div>
+            <div class="input-group">
+                <input type="text" id="stakeMemeAmountInput" placeholder="Enter Amount">
+            </div>
+            <div class="percentage-buttons">
+                <button class="percentage-btn" onclick="setStakePercentage('Meme', 25)">25%</button>
+                <button class="percentage-btn" onclick="setStakePercentage('Meme', 50)">50%</button>
+                <button class="percentage-btn" onclick="setStakePercentage('Meme', 75)">75%</button>
+                <button class="percentage-btn" onclick="setStakePercentage('Meme', 100)">100%</button>
+            </div>
+            <div class="button-group">
+                <button id="stakeMemeButton">Stake</button>
+                <button id="unstakeMemeButton" disabled>Unstake All</button>
+                <button id="claimRewardsButtonMeme">Claim Rewards</button>
+            </div>
+            <div class="info-panel" id="memeStakeInfo">Staked: 0<br>Rewards: 0</div>
+        </div>
+    </div>
+    <footer>Powered by Shibarium © 2025</footer>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="closeModal()">OK</button>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
+    <script>
+        let web3, accounts, factoryContract, currentMemeContract, currentTokenContract;
+        const FACTORY_ADDRESS = "0xF585a66D92e7c1991956E0cE2c501c474c6d4361";
+        const FACTORY_ABI = [
+            {"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_symbol","type":"string"},{"internalType":"address","name":"_stakeToken","type":"address"},{"internalType":"uint256","name":"_stakeUnitToken","type":"uint256"}],"name":"createMemeCoin","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_creator","type":"address"}],"name":"getDeployedMemeCoins","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"getAllMemeCoins","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"}
+        ];
+        const MEME_ABI = [
+            {"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_symbol","type":"string"},{"internalType":"address","name":"_stakeToken","type":"address"},{"internalType":"uint256","name":"_stakeUnitToken","type":"uint256"},{"internalType":"address","name":"_owner","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
+            {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getPendingRewards","outputs":[{"internalType":"uint256","name":"tokenReward","type":"uint256"},{"internalType":"uint256","name":"memeReward","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"getRemainingRewards","outputs":[{"internalType":"uint256","name":"remaining","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"getTotalStaked","outputs":[{"internalType":"uint256","name":"totalToken","type":"uint256"},{"internalType":"uint256","name":"totalMeme","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getUserHistory","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getUserStake","outputs":[{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"uint256","name":"memeAmount","type":"uint256"},{"internalType":"uint256","name":"userStartBlock","type":"uint256"},{"internalType":"uint256","name":"tokenReward","type":"uint256"},{"internalType":"uint256","name":"memeReward","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"stakeToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"stakeERC20","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"stakeMeme","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"STAKE_UNIT_TOKEN","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"STAKE_UNIT_MEME","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalTokenStaked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalMemeStaked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalMinedAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"unstakeToken","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"unstakeMeme","outputs":[],"stateMutability":"nonpayable","type":"function"}
+        ];
+        const TOKEN_ABI = [
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+        ];
+        const shibariumMainnet = {
+            chainId: 109,
+            chainName: 'Shibarium',
+            nativeCurrency: { name: 'BONE', symbol: 'BONE', decimals: 18 },
+            rpcUrls: ['https://www.shibrpc.com'],
+            blockExplorerUrls: ['https://shibariumscan.io']
+        };
+        const prompts = [
+            "Stake tokens and MemeCoin to earn rewards!",
+            "Boost your staking for more rewards!",
+            "Start staking now and grow your MemeCoin!",
+            "Maximize rewards with token staking!",
+            "Join the staking pool today!"
+        ];
+        let promptIndex = 0;
+        let currentMemeSymbol = "MEME";
+
+        function showModal(message) {
+            document.getElementById('modalMessage').innerHTML = message;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function updatePrompt() {
+            document.getElementById('prompt').innerText = prompts[promptIndex];
+            promptIndex = (promptIndex + 1) % prompts.length;
+        }
+
+        async function updateMemeBalance() {
+            if (!web3 || !currentMemeContract || !accounts) return;
+            const balance = await currentMemeContract.methods.balanceOf(accounts[0]).call();
+            document.getElementById('memeBalance').innerText = `${parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)} ${currentMemeSymbol}`;
+        }
+
+        async function updateTokenStakeInfo() {
+            if (!web3 || !currentMemeContract || !currentTokenContract || !accounts) {
+                document.getElementById('tokenStakeInfo').innerHTML = 'Balance: 0<br>Staked: 0<br>Rewards: 0';
+                document.getElementById('unstakeTokenButton').disabled = true;
+                return;
+            }
+            const stakeInfo = await currentMemeContract.methods.getUserStake(accounts[0]).call();
+            const tokenBalance = await currentTokenContract.methods.balanceOf(accounts[0]).call();
+            const tokenBalanceEther = parseFloat(web3.utils.fromWei(tokenBalance, 'ether')).toFixed(2);
+            const tokenAmount = parseFloat(web3.utils.fromWei(stakeInfo[0], 'ether')).toFixed(2);
+            const tokenReward = parseFloat(web3.utils.fromWei(stakeInfo[3], 'ether')).toFixed(4);
+            document.getElementById('tokenStakeInfo').innerHTML = `Balance: ${tokenBalanceEther}<br>Staked: ${tokenAmount}<br>Rewards: ${tokenReward} ${currentMemeSymbol}`;
+            document.getElementById('unstakeTokenButton').disabled = stakeInfo[0] === '0';
+        }
+
+        async function updateMemeStakeInfo() {
+            if (!web3 || !currentMemeContract || !accounts) {
+                document.getElementById('memeStakeInfo').innerHTML = 'Staked: 0<br>Rewards: 0';
+                document.getElementById('unstakeMemeButton').disabled = true;
+                return;
+            }
+            const stakeInfo = await currentMemeContract.methods.getUserStake(accounts[0]).call();
+            const memeAmount = parseFloat(web3.utils.fromWei(stakeInfo[1], 'ether')).toFixed(2);
+            const memeReward = parseFloat(web3.utils.fromWei(stakeInfo[4], 'ether')).toFixed(4);
+            document.getElementById('memeStakeInfo').innerHTML = `Staked: ${memeAmount}<br>Rewards: ${memeReward} ${currentMemeSymbol}`;
+            document.getElementById('unstakeMemeButton').disabled = stakeInfo[1] === '0';
+        }
+
+        async function updateUserAddress() {
+            if (!accounts) {
+                document.getElementById('userNickname').innerText = 'Not connected';
+                document.getElementById('walletAddress').innerText = 'Not connected';
+            } else {
+                const shortAddress = `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
+                document.getElementById('userNickname').innerText = shortAddress;
+                document.getElementById('walletAddress').innerText = shortAddress;
+            }
+        }
+
+        async function updateDeployedMemeList() {
+            if (!web3 || !factoryContract || !accounts) {
+                document.getElementById('deployedMemeList').innerHTML = '';
+                return;
+            }
+            const memeAddresses = await factoryContract.methods.getDeployedMemeCoins(accounts[0]).call();
+            let html = '';
+            for (const addr of memeAddresses) {
+                const memeContract = new web3.eth.Contract(MEME_ABI, addr);
+                const name = await memeContract.methods.name().call();
+                const symbol = await memeContract.methods.symbol().call();
+                html += `<div class="meme-item"><span>${name} (${symbol}) - ${addr.slice(0, 6)}...${addr.slice(-4)}</span><button class="copy-btn" onclick="navigator.clipboard.writeText('${addr}').then(() => alert('Address copied!'))">Copy</button></div>`;
+            }
+            document.getElementById('deployedMemeList').innerHTML = html;
+        }
+
+        async function connectWallet() {
+            const connectButton = document.getElementById('connectButton');
+            try {
+                if (!window.ethereum) {
+                    showModal('No wallet detected. Please install <a href="https://metamask.io" target="_blank">MetaMask</a>.');
+                    return;
+                }
+                connectButton.classList.add('loading');
+                web3 = new Web3(window.ethereum);
+                accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (!accounts.length) {
+                    showModal('Please unlock your wallet or connect it.');
+                    return;
+                }
+                const chainId = await web3.eth.getChainId();
+                if (chainId !== 109) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: web3.utils.numberToHex(109) }]
+                        });
+                    } catch (switchError) {
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [shibariumMainnet]
+                            });
+                        } else {
+                            showModal('Failed to switch network. Please add Shibarium manually.');
+                            return;
+                        }
+                    }
+                }
+                factoryContract = new web3.eth.Contract(FACTORY_ABI, FACTORY_ADDRESS);
+                showModal('Connected to Shibarium successfully!');
+                updateUserAddress();
+                updateDeployedMemeList();
+            } catch (error) {
+                showModal(`Connection failed: ${error.message}`);
+            } finally {
+                connectButton.classList.remove('loading');
+            }
+        }
+
+        async function deployMemeCoin() {
+            if (!web3 || !factoryContract || !accounts) {
+                showModal('Please connect your wallet first!');
+                return;
+            }
+            const deployButton = document.getElementById('deployMemeButton');
+            const name = document.getElementById('memeName').value;
+            const symbol = document.getElementById('memeSymbol').value;
+            const stakeToken = document.getElementById('stakeTokenAddress').value;
+            const stakeUnitToken = document.getElementById('stakeUnitToken').value;
+            if (!name || !symbol || !stakeToken || !stakeUnitToken || stakeUnitToken <= 0) {
+                showModal('Please fill all fields with valid values!');
+                return;
+            }
+            try {
+                deployButton.classList.add('loading');
+                showModal('Deploying MemeCoin...');
+                await factoryContract.methods.createMemeCoin(name, symbol, stakeToken, web3.utils.toWei(stakeUnitToken, 'ether')).send({ from: accounts[0] });
+                showModal('MemeCoin deployed successfully!');
+                document.getElementById('memeName').value = '';
+                document.getElementById('memeSymbol').value = '';
+                document.getElementById('stakeTokenAddress').value = '';
+                document.getElementById('stakeUnitToken').value = '';
+                updateDeployedMemeList();
+            } catch (error) {
+                showModal(`Deploy failed: ${error.message}`);
+            } finally {
+                deployButton.classList.remove('loading');
+            }
+        }
+
+        async function searchMemeCoin() {
+            const searchButton = document.getElementById('searchMemeButton');
+            const memeAddress = document.getElementById('searchMemeAddress').value;
+            if (!web3 || !web3.utils.isAddress(memeAddress)) {
+                showModal('Please enter a valid MemeCoin address!');
+                return;
+            }
+            try {
+                searchButton.classList.add('loading');
+                currentMemeContract = new web3.eth.Contract(MEME_ABI, memeAddress);
+                const name = await currentMemeContract.methods.name().call();
+                const symbol = await currentMemeContract.methods.symbol().call();
+                const stakeTokenAddr = await currentMemeContract.methods.stakeToken().call();
+                currentTokenContract = new web3.eth.Contract(TOKEN_ABI, stakeTokenAddr);
+                currentMemeSymbol = symbol;
+                document.getElementById('tokenSectionTitle').innerText = `Stake Token (${name})`;
+                document.getElementById('memeSectionTitle').innerText = `Stake ${symbol}`;
+                document.getElementById('tokenStakeSection').style.display = 'block';
+                document.getElementById('memeStakeSection').style.display = 'block';
+                updateMemeBalance();
+                updateTokenStakeInfo();
+                updateMemeStakeInfo();
+            } catch (error) {
+                showModal(`Invalid MemeCoin address or error: ${error.message}`);
+            } finally {
+                searchButton.classList.remove('loading');
+            }
+        }
+
+        async function stakeToken() {
+            if (!web3 || !currentMemeContract || !currentTokenContract || !accounts) {
+                showModal('Please connect wallet and select a MemeCoin!');
+                return;
+            }
+            const stakeButton = document.getElementById('stakeTokenButton');
+            let amount = document.getElementById('stakeTokenAmountInput').value;
+            if (!amount || amount <= 0) {
+                showModal('Please enter a valid amount!');
+                return;
+            }
+            const stakeUnitToken = await currentMemeContract.methods.STAKE_UNIT_TOKEN().call();
+            const stakeUnitTokenEther = parseFloat(web3.utils.fromWei(stakeUnitToken, 'ether'));
+            amount = Math.floor(amount / stakeUnitTokenEther) * stakeUnitTokenEther;
+            if (amount < stakeUnitTokenEther) {
+                showModal(`Amount must be at least ${stakeUnitTokenEther} and in multiples of ${stakeUnitTokenEther}!`);
+                return;
+            }
+            try {
+                stakeButton.classList.add('loading');
+                const weiAmount = web3.utils.toWei(amount.toString(), 'ether');
+                showModal('Approving token for staking...');
+                await currentTokenContract.methods.approve(currentMemeContract.options.address, weiAmount).send({ from: accounts[0] });
+                showModal(`Staking ${amount} tokens...`);
+                await currentMemeContract.methods.stakeERC20(weiAmount).send({ from: accounts[0] });
+                showModal(`Successfully staked ${amount} tokens!`);
+                document.getElementById('stakeTokenAmountInput').value = '';
+                updateMemeBalance();
+                updateTokenStakeInfo();
+            } catch (error) {
+                showModal(`Staking failed: ${error.message}`);
+            } finally {
+                stakeButton.classList.remove('loading');
+            }
+        }
+
+        async function unstakeToken() {
+            if (!web3 || !currentMemeContract || !accounts) {
+                showModal('Please connect wallet and select a MemeCoin!');
+                return;
+            }
+            const unstakeButton = document.getElementById('unstakeTokenButton');
+            try {
+                unstakeButton.classList.add('loading');
+                showModal('Unstaking all tokens and claiming rewards...');
+                await currentMemeContract.methods.unstakeToken().send({ from: accounts[0] });
+                showModal('Successfully unstaked all tokens!');
+                updateMemeBalance();
+                updateTokenStakeInfo();
+            } catch (error) {
+                showModal(`Unstaking failed: ${error.message}`);
+            } finally {
+                unstakeButton.classList.remove('loading');
+            }
+        }
+
+        async function claimRewards() {
+            if (!web3 || !currentMemeContract || !accounts) {
+                showModal('Please connect wallet and select a MemeCoin!');
+                return;
+            }
+            const claimButton = document.getElementById('claimRewardsButton');
+            try {
+                claimButton.classList.add('loading');
+                showModal('Claiming rewards...');
+                await currentMemeContract.methods.claimRewards().send({ from: accounts[0] });
+                showModal('Successfully claimed rewards!');
+                updateMemeBalance();
+                updateTokenStakeInfo();
+                updateMemeStakeInfo();
+            } catch (error) {
+                showModal(`Claim failed: ${error.message}`);
+            } finally {
+                claimButton.classList.remove('loading');
+            }
+        }
+
+        async function stakeMeme() {
+            if (!web3 || !currentMemeContract || !accounts) {
+                showModal('Please connect wallet and select a MemeCoin!');
+                return;
+            }
+            const stakeButton = document.getElementById('stakeMemeButton');
+            let amount = document.getElementById('stakeMemeAmountInput').value;
+            if (!amount || amount <= 0) {
+                showModal('Please enter a valid amount!');
+                return;
+            }
+            const stakeUnitMeme = await currentMemeContract.methods.STAKE_UNIT_MEME().call();
+            const stakeUnitMemeEther = parseFloat(web3.utils.fromWei(stakeUnitMeme, 'ether'));
+            amount = Math.floor(amount / stakeUnitMemeEther) * stakeUnitMemeEther;
+            if (amount < stakeUnitMemeEther) {
+                showModal(`Amount must be at least ${stakeUnitMemeEther} and in multiples of ${stakeUnitMemeEther}!`);
+                return;
+            }
+            try {
+                stakeButton.classList.add('loading');
+                const weiAmount = web3.utils.toWei(amount.toString(), 'ether');
+                showModal(`Staking ${amount} ${currentMemeSymbol}...`);
+                await currentMemeContract.methods.stakeMeme(weiAmount).send({ from: accounts[0] });
+                showModal(`Successfully staked ${amount} ${currentMemeSymbol}!`);
+                document.getElementById('stakeMemeAmountInput').value = '';
+                updateMemeBalance();
+                updateMemeStakeInfo();
+            } catch (error) {
+                showModal(`Staking failed: ${error.message}`);
+            } finally {
+                stakeButton.classList.remove('loading');
+            }
+        }
+
+        async function unstakeMeme() {
+            if (!web3 || !currentMemeContract || !accounts) {
+                showModal('Please connect wallet and select a MemeCoin!');
+                return;
+            }
+            const unstakeButton = document.getElementById('unstakeMemeButton');
+            try {
+                unstakeButton.classList.add('loading');
+                showModal(`Unstaking all ${currentMemeSymbol} and claiming rewards...`);
+                await currentMemeContract.methods.unstakeMeme().send({ from: accounts[0] });
+                showModal(`Successfully unstaked all ${currentMemeSymbol}!`);
+                updateMemeBalance();
+                updateMemeStakeInfo();
+            } catch (error) {
+                showModal(`Unstaking failed: ${error.message}`);
+            } finally {
+                unstakeButton.classList.remove('loading');
+            }
+        }
+
+        async function claimRewardsMeme() {
+            if (!web3 || !currentMemeContract || !accounts) {
+                showModal('Please connect wallet and select a MemeCoin!');
+                return;
+            }
+            const claimButton = document.getElementById('claimRewardsButtonMeme');
+            try {
+                claimButton.classList.add('loading');
+                showModal('Claiming rewards...');
+                await currentMemeContract.methods.claimRewards().send({ from: accounts[0] });
+                showModal('Successfully claimed rewards!');
+                updateMemeBalance();
+                updateTokenStakeInfo();
+                updateMemeStakeInfo();
+            } catch (error) {
+                showModal(`Claim failed: ${error.message}`);
+            } finally {
+                claimButton.classList.remove('loading');
+            }
+        }
+
+        async function setStakePercentage(type, percentage) {
+            if (!web3 || !currentMemeContract || !accounts) {
+                showModal('Please connect wallet and select a MemeCoin!');
+                return;
+            }
+            if (type === 'Token') {
+                const balance = await currentTokenContract.methods.balanceOf(accounts[0]).call();
+                const stakeUnitToken = await currentMemeContract.methods.STAKE_UNIT_TOKEN().call();
+                const tokenBalance = parseFloat(web3.utils.fromWei(balance, 'ether'));
+                const stakeUnitTokenEther = parseFloat(web3.utils.fromWei(stakeUnitToken, 'ether'));
+                let stakeAmount = tokenBalance * percentage / 100;
+                stakeAmount = Math.floor(stakeAmount / stakeUnitTokenEther) * stakeUnitTokenEther;
+                document.getElementById('stakeTokenAmountInput').value = stakeAmount >= stakeUnitTokenEther ? stakeAmount : 0;
+            } else {
+                const balance = await currentMemeContract.methods.balanceOf(accounts[0]).call();
+                const stakeUnitMeme = await currentMemeContract.methods.STAKE_UNIT_MEME().call();
+                const memeBalance = parseFloat(web3.utils.fromWei(balance, 'ether'));
+                const stakeUnitMemeEther = parseFloat(web3.utils.fromWei(stakeUnitMeme, 'ether'));
+                let stakeAmount = memeBalance * percentage / 100;
+                stakeAmount = Math.floor(stakeAmount / stakeUnitMemeEther) * stakeUnitMemeEther;
+                document.getElementById('stakeMemeAmountInput').value = stakeAmount >= stakeUnitMemeEther ? stakeAmount : 0;
+            }
+        }
+
+        setInterval(updatePrompt, 3000);
+        setInterval(() => {
+            updateMemeBalance();
+            updateTokenStakeInfo();
+            updateMemeStakeInfo();
+            updateDeployedMemeList();
+        }, 5000);
+
+        document.getElementById('connectButton').addEventListener('click', connectWallet);
+        document.getElementById('deployMemeButton').addEventListener('click', deployMemeCoin);
+        document.getElementById('searchMemeButton').addEventListener('click', searchMemeCoin);
+        document.getElementById('stakeTokenButton').addEventListener('click', stakeToken);
+        document.getElementById('unstakeTokenButton').addEventListener('click', unstakeToken);
+        document.getElementById('claimRewardsButton').addEventListener('click', claimRewards);
+        document.getElementById('stakeMemeButton').addEventListener('click', stakeMeme);
+        document.getElementById('unstakeMemeButton').addEventListener('click', unstakeMeme);
+        document.getElementById('claimRewardsButtonMeme').addEventListener('click', claimRewardsMeme);
+
+        window.ethereum?.on('chainChanged', (chainId) => {
+            if (parseInt(chainId, 16) !== 109) {
+                showModal('Switched to wrong network. Please reconnect to Shibarium.');
+                web3 = null;
+                factoryContract = null;
+                currentMemeContract = null;
+                currentTokenContract = null;
+                accounts = null;
+                updateUserAddress();
+            } else {
+                connectWallet();
+            }
+        });
+
+        window.ethereum?.on('accountsChanged', (newAccounts) => {
+            if (newAccounts.length) {
+                connectWallet();
+            } else {
+                showModal('Wallet disconnected. Please reconnect.');
+                web3 = null;
+                factoryContract = null;
+                currentMemeContract = null;
+                currentTokenContract = null;
+                accounts = null;
+                updateUserAddress();
+            }
+        });
+
+        window.addEventListener('load', () => {
+            if (!window.location.protocol.startsWith('http')) {
+                showModal('Please run this page via a local server (e.g., "npx serve") to connect MetaMask.');
+            } else if (!window.ethereum) {
+                showModal('No wallet detected. Please install <a href="https://metamask.io" target="_blank">MetaMask</a>.');
+            }
+        });
+    </script>
+</body>
+</html>
